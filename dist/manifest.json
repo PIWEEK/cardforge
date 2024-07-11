@@ -1,0 +1,9 @@
+{
+  "name": "Cardforge",
+  "code": "plugin.js",
+  "description": "Plugin to create cards for board games",
+  "permissions": [
+    "content:read",
+    "content:write"
+  ]
+}
