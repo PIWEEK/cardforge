@@ -3,7 +3,7 @@ export interface BaseEvent {
 }
 
 
-export interface Deck extends BaseEvent {
+export interface DeckEvent extends BaseEvent {
     name: string;
     size: string;
     orientation: string;
@@ -11,4 +11,4 @@ export interface Deck extends BaseEvent {
 
 
 
-export type PluginUIEvent = BaseEvent | Deck;
+export type PluginUIEvent = BaseEvent | DeckEvent;

@@ -46,12 +46,13 @@
 
         <form id="create-deck-frm">
           <h3>Create new deck</h3>
-          <div class="input-text"><label>DECK NAME</label><input id="create-deck-name" type="text"
-              required="required" />
+          <div class="input-text"><label>DECK NAME</label><input id="create-deck-name" type="text" required="required"
+              value="Deck01" />
           </div>
           <div class="row-input">
-            <div id="create-deck-size" class="input-text">
-              <label>CARD SIZE</label><select>
+            <div class="input-text">
+              <label>CARD SIZE</label>
+              <select id="create-deck-size">
                 <option value="P1">poker standard (63 x 88 mm)</option>
                 <option value="B1">bridge (56 x 88 mm)</option>
                 <option value="B2">bridge (57 x 89 mm)</option>
@@ -64,8 +65,8 @@
                 <option value="B1">big (70 x 120 mm)</option>
               </select>
             </div>
-            <div id="create-deck-orientation" class="input-text"><label>DECK ORIENTATION</label>
-              <select>
+            <div class="input-text"><label>DECK ORIENTATION</label>
+              <select id="create-deck-orientation">
                 <option value="portrait">Portrait</option>
                 <option value="landscape">Landscape</option>
               </select>
