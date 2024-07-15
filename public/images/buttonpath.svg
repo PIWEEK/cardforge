@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="33.002998"
+   height="54.645901"
+   viewBox="0 0 33.002998 54.645901"
+   version="1.1"
+   id="svg11"
+   sodipodi:docname="buttonpath.svg"
+   style="fill:none"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <metadata
+     id="metadata15">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     id="namedview13"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="4.0669856"
+     inkscape:cx="43.457812"
+     inkscape:cy="50.410076"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg11" />
+  <path
+     d="M 11.9568,0 V 15.5035 L 0,27.4603 0.5447,28.005 11.9568,39.417 V 54.6459 H 33.003 V 53.105 H 13.4976 V 1.54087 H 33.002996 V 0 Z m 0,17.6831 v 3.9839 l -5.7933,5.7933 0.5447,0.5447 5.2486,5.2486 v 3.9838 L 2.1797,27.4603 Z m 0,6.1627 v 7.2289 L 8.3423,27.4603 Z"
+     id="path2"
+     inkscape:connector-curvature="0"
+     style="clip-rule:evenodd;fill:url(#paint0_linear);fill-rule:evenodd"
+     sodipodi:nodetypes="ccccccccccccccccccccccccc" />
+  <defs
+     id="defs9">
+    <linearGradient
+       id="paint0_linear"
+       x2="1"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0,54.6459,-208.436,0,208.436,0)">
+      <stop
+         stop-color="#317A6D"
+         id="stop4" />
+      <stop
+         offset="1"
+         stop-color="#0C232A"
+         id="stop6" />
+    </linearGradient>
+  </defs>
+</svg>

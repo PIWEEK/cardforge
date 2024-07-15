@@ -1,12 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Penpot plugin example</title>
-  </head>
-  <body>
-    <div id="app"></div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+  <title>CardForge</title>
+</head>
+
+<body>
+  <div id="header">
+    <img class="logo" src="images/main-logo.svg" />
+    <div class="tabs">
+      <div id="ts-create" data-tab="create" class="tab-selector selected">CREATE DECK</div>
+      <div id="ts-cards" data-tab="cards" class="tab-selector">CARDS</div>
+      <div id="ts-print" data-tab="print" class="tab-selector">PRINT INFO</div>
+      <div id="ts-help" data-tab="help" class="tab-selector">HELP</div>
+    </div>
+  </div>
+  <div id="content">
+    <div id="tab-create" class="tab">
+      <div id="box-create" class="box box-small">
+        <div class="art">
+          <img src="images/decks.svg" />
+        </div>
+        <div class="corner top-left">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner top-right">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom-left">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom-right">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom">
+          <img src="images/marker.svg" />
+        </div>
+
+        <form id="create-deck-frm">
+          <h3>Create new deck</h3>
+          <div class="input-text"><label>DECK NAME</label><input id="create-deck-name" type="text"
+              required="required" />
+          </div>
+          <div class="row-input">
+            <div id="create-deck-size" class="input-text">
+              <label>CARD SIZE</label><select>
+                <option value="P1">poker standard (63 x 88 mm)</option>
+                <option value="B1">bridge (56 x 88 mm)</option>
+                <option value="B2">bridge (57 x 89 mm)</option>
+                <option value="M1">mini (41 x 68 mm)</option>
+                <option value="M2">mini (45 x 68 mm)</option>
+                <option value="M3">mini (44 x 63 mm)</option>
+                <option value="S1">square (68 x 68 mm)</option>
+                <option value="S2">square (70 x 70 mm)</option>
+                <option value="T1">tarot (70 x 110 mm)</option>
+                <option value="B1">big (70 x 120 mm)</option>
+              </select>
+            </div>
+            <div id="create-deck-orientation" class="input-text"><label>DECK ORIENTATION</label>
+              <select>
+                <option value="portrait">Portrait</option>
+                <option value="landscape">Landscape</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-buttons">
+            <button class="btn-primary" type="submit">CREATE DECK</button>
+          </div>
+        </form>
+      </div>
+      <div id="box-create-error" class="box box-small hidden">
+        <div class="art">
+          <img src="images/skull.svg" />
+        </div>
+        <div class="corner top-left">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner top-right">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom-left">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom-right">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom">
+          <img src="images/marker.svg" />
+        </div>
+
+
+        <h3>ERROR</h3>
+        <p>To create a new deck, the page must be empty</p>
+
+        <div class="modal-buttons">
+          <button id="box-create-error-close" class="btn-primary">OK</button>
+        </div>
+
+      </div>
+      <div id="tab-cards" class="tab">CARDS</div>
+      <div id="tab-print" class="tab">PRINT INFO</div>
+      <div id="tab-help" class="tab">HELP</div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
-  </body>
+</body>
+
 </html>

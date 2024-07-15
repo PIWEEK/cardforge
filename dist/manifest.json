@@ -1,9 +1,11 @@
 {
   "name": "Cardforge",
+  "host": "http://localhost:4400",
   "code": "plugin.js",
   "description": "Plugin to create cards for board games",
   "permissions": [
     "content:read",
-    "content:write"
+    "content:write",
+    "library:read"
   ]
 }
