@@ -15,10 +15,11 @@ function listenerFunction(this: HTMLElement, ev: Event) {
 }
 */
 
+let assetsUrl = "";
+
 function sendMessage(message: PluginUIEvent) {
   parent.postMessage(message, '*');
 }
-
 
 
 function initMessageListener() {
@@ -29,6 +30,12 @@ function initMessageListener() {
       createDeckShowError(true);
     } else if (event.data.type == "CARDS_DATA") {
       loadCardsData(event.data.data);
+    } else if (event.data.type == "CARD_FIELDS") {
+      assetsUrl = event.data.data.assetsUrl;
+      cardFields = event.data.data.fields;
+      loadCardFields();
+    } else if (event.data.type == "IMAGE_CREATED") {
+      updateImageInfo(event.data.data.num, event.data.data.name, event.data.data.id);
     }
   });
 }
@@ -106,6 +113,11 @@ function saveCardsData() {
   sendMessage({ type: 'save-cards-data', data: JSON.stringify(cardsData) });
 }
 
+function updateImageInfo(num: number, name: string, id: string) {
+  cardsData[num - 1][name] = id;
+  saveCardsData();
+}
+
 function loadCardsData(data: string) {
   if (data) {
     cardsData = JSON.parse(data);
@@ -131,8 +143,6 @@ function createCardEntry(num: number, cardData: any) {
   del.addEventListener("click", () => { deleteCard(num) });
   actions.appendChild(del);
 
-
-
   let number = document.createElement("div");
   number.classList.add("card-num");
   number.innerText = String(num).padStart(2, '0');
@@ -155,9 +165,24 @@ function createCardEntry(num: number, cardData: any) {
       let div = document.createElement("div");
       div.classList.add("card-image");
       let img = document.createElement("img");
-      //TODO Load image from card data
-      img.src = "images/add_image.png"
+
+
+      let fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+
+      div.appendChild(fileInput);
+
+
+      if (cardData.hasOwnProperty(cardFields[i].name)) {
+        img.src = assetsUrl + cardData[cardFields[i].name];
+      } else {
+        img.src = "images/add_image.png";
+      }
+
       div.appendChild(img);
+      img.addEventListener("click", () => { fileInput.click() });
+      fileInput.addEventListener("change", (ev: Event) => { saveCardImage(num, cardFields[i].name, img, ev) });
 
       entry.appendChild(div);
     }
@@ -194,10 +219,54 @@ function saveCardText(num: number, name: string, val: string) {
   saveCardsData();
 }
 
-function initFields() {
-  cardFields = [{ "name": "Nombre", "type": "text" }, { "name": "Fuerza", "type": "text" }];
+
+function handleImagePreview(fileInput, previewContainer) {
+  const file = fileInput.files[0];
+
+  fileInput.dataset.dirty = true;
+
+  if (file) {
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const imageBlob = event.target.result;
+      const imageUrl = URL.createObjectURL(new Blob([imageBlob], { type: 'image/jpeg' }));
+
+      previewContainer.src = imageUrl;
+
+    };
+
+    reader.readAsArrayBuffer(file);
+  } else {
+    alert("Please select an image first!");
+  }
+}
 
 
+async function saveCardImage(num: number, name: string, img: HTMLImageElement, event: Event) {
+  const fileInput = event.target as HTMLInputElement;
+  if (fileInput?.files?.length) {
+    const file = fileInput?.files[0];
+
+    if (file) {
+      const buff = await file.arrayBuffer();
+      const data = new Uint8Array(buff);
+      const mimeType = file.type;
+
+      const imageUrl = URL.createObjectURL(new Blob([data], { type: mimeType }));
+      img.src = imageUrl;
+
+      sendMessage({ type: 'create-image-data', data: { data, mimeType, num, name } });
+      fileInput.value = '';
+    }
+  }
+}
+
+
+
+
+function loadCardFields() {
+  //cardFields = [{ "name": "Nombre", "type": "text" }, { "name": "Fuerza", "type": "text" }];
   const cardHeader = document.getElementById("cards-header");
   const cardsHeaderActions = document.getElementById("cards-header-actions");
 
@@ -211,7 +280,7 @@ function initFields() {
     let div = document.createElement("div");
     div.classList.add("card-header");
     if (field.type == "image") {
-      div.classList.add("card-img");
+      div.classList.add("card-image");
     } else {
       div.classList.add("card-text");
     }
@@ -219,7 +288,10 @@ function initFields() {
     cardHeader?.insertBefore(div, cardsHeaderActions)
   }
 
+
+  sendMessage({ type: 'load-cards-data', data: "" });
 }
+
 
 function reloadCardEntries() {
   document.querySelectorAll('.card-entry').forEach(e => e.remove());
@@ -232,8 +304,7 @@ function reloadCardEntries() {
 
 
 function initCards() {
-  initFields();
-  sendMessage({ type: 'load-cards-data', data: "" });
+  sendMessage({ type: 'load-card-fields', data: "" });
   document.getElementById("add-card")?.addEventListener("click", () => { addEmptyCard() });
 }
 

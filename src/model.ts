@@ -1,6 +1,6 @@
 export interface BaseEvent {
     type: string;
-    data: string;
+    data: any;
 }
 
 
@@ -11,6 +11,7 @@ export interface DeckEvent extends BaseEvent {
 }
 
 export interface CardField {
+    id: string;
     name: string;
     type: string;
 }

@@ -5,7 +5,6 @@
   "description": "Plugin to create cards for board games",
   "permissions": [
     "content:read",
-    "content:write",
-    "library:read"
+    "content:write"
   ]
 }

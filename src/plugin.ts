@@ -1,6 +1,6 @@
 
 import { PenpotShape, PenpotFrame, PenpotStroke } from '@penpot/plugin-types';
-import type { PluginUIEvent, DeckEvent } from './model';
+import type { PluginUIEvent, DeckEvent, CardField } from './model';
 
 
 
@@ -14,12 +14,49 @@ penpot.ui.open("CardForge", "", {
     height: 650,
 });
 
+
 function loadCardsData() {
     let data = penpot.currentPage.getPluginData("cardsData");
     console.log("loaded cards data:", data);
     let cardsData = JSON.parse(data);
     penpot.ui.sendMessage({ "type": "CARDS_DATA", "data": cardsData });
 }
+
+
+function isValidField(shape: PenpotShape) {
+    return (shape.name?.startsWith("#") &&
+        ((shape.type == "text") ||
+            ((shape.type == "rect") &&
+                (shape.fills?.length) == 1 &&
+                (shape["fills"][0]["fillImage"]))));
+}
+
+
+function findFields(frame: PenpotFrame, fields: CardField[]) {
+    for (let i = 0; i < frame.children.length; i++) {
+        let child = frame.children[i];
+        if (isValidField(child)) {
+            let type = (child["type"] == "text") ? "text" : "image";
+            fields.push({ "name": child["name"], "type": type, "id": child.id });
+        }
+        if (child.hasOwnProperty("children")) {
+            findFields((child as PenpotFrame), fields);
+        }
+    }
+    return fields;
+}
+
+
+function loadCardFields() {
+    const root: PenpotFrame = (penpot.currentPage.getShapeById("00000000-0000-0000-0000-000000000000") as PenpotFrame);
+    const card = (findByName(root, "Front") as PenpotFrame);
+
+    const fields = findFields(card, [])
+
+    const assetsUrl = "https://early.penpot.dev/assets/by-file-media-id/";
+    penpot.ui.sendMessage({ "type": "CARD_FIELDS", "data": { fields: fields, assetsUrl: assetsUrl } });
+}
+
 
 // see findShapes
 function findByName(parent: PenpotFrame, name: string) {
@@ -34,6 +71,12 @@ function findByName(parent: PenpotFrame, name: string) {
 
 function createDeck(message: DeckEvent) {
     penpot.currentPage.name = message.name;
+
+    const images = penpot.createFrame();
+    images.name = "_Images";
+    images.y = - 1000;
+    images.hidden = true;
+
 
     front = penpot.createFrame();
     front.name = "Front";
@@ -82,6 +125,26 @@ function handleCreateDeck(message: DeckEvent) {
     }
 }
 
+
+
+function createImage(data: Uint8Array, mimeType: string, num: number, name: string) {
+    penpot
+        .uploadMediaData('image', data, mimeType)
+        .then((data) => {
+            const shape = penpot.createRectangle();
+            shape.resize(data.width, data.height);
+            shape.fills = [{ fillOpacity: 1, fillImage: data }];
+            shape.x = 0;
+            shape.y = 0;
+
+            const images = (penpot.currentPage.findShapes({ name: "_Images" })[0] as PenpotFrame);
+            images.appendChild(shape);
+            penpot.ui.sendMessage({ "type": "IMAGE_CREATED", "data": { "num": num, "name": name, "id": shape.fills[0].fillImage?.id } });
+        })
+        .catch((err) => console.error(err));
+}
+
+
 penpot.ui.onMessage((message: PluginUIEvent) => {
     console.log("message: ", message);
     if (message.type === "duplicate") {
@@ -106,6 +169,16 @@ penpot.ui.onMessage((message: PluginUIEvent) => {
         penpot.currentPage.setPluginData("cardsData", JSON.stringify(message.data));
     } else if (message.type === "load-cards-data") {
         loadCardsData();
+    } else if (message.type === "load-card-fields") {
+        loadCardFields();
+    } else if (message.type === "create-image-data") {
+        const { data, mimeType, num, name } = message.data as {
+            data: Uint8Array;
+            mimeType: string;
+            num: number;
+            name: string;
+        };
+        createImage(data, mimeType, num, name);
     }
 
 

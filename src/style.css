@@ -322,6 +322,7 @@ h3 {
 .cards-header div {
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .cards-list {
@@ -415,8 +416,17 @@ h3 {
   padding: 1rem;
 }
 
-.card-img {
-  width: 50px;
+.card-image {
+  width: 100px;
+}
+
+.card-image img {
+  width: 40px;
+  margin-top: 5px;
+}
+
+.card-image input {
+  display: none;
 }
 
 .btn-add {
