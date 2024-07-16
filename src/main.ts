@@ -204,12 +204,14 @@ function addEmptyCard() {
 
 function deleteCard(num: number) {
   cardsData.splice((num - 1), 1);
+  saveCardsData();
   reloadCardEntries();
 }
 
 function copyCard(num: number) {
   let card = structuredClone(cardsData[num - 1]);
   cardsData.splice(num - 1, 0, card);
+  saveCardsData();
 
   reloadCardEntries();
 }
@@ -284,7 +286,7 @@ function loadCardFields() {
     } else {
       div.classList.add("card-text");
     }
-    div.innerText = field.name;
+    div.innerText = field.name.substring(1);
     cardHeader?.insertBefore(div, cardsHeaderActions)
   }
 

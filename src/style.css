@@ -8,6 +8,7 @@ body {
   text-rendering: optimizeLegibility;
   padding: 10px;
   background-color: white;
+  overflow: hidden;
 }
 
 p {
@@ -423,7 +424,21 @@ h3 {
 .card-image img {
   width: 40px;
   margin-top: 5px;
+  cursor: pointer;
 }
+
+.card-image img:hover {
+  position: relative;
+  z-index: 1000;
+  transform: scale(5);
+}
+
+.card-entry:nth-child(-n + 2) .card-image img:hover {
+  transform: scale(5) translateY(15px);
+}
+
+
+
 
 .card-image input {
   display: none;
