@@ -35,7 +35,7 @@ function initMessageListener() {
       cardFields = event.data.data.fields;
       loadCardFields();
     } else if (event.data.type == "IMAGE_CREATED") {
-      updateImageInfo(event.data.data.num, event.data.data.name, event.data.data.id);
+      updateImageInfo(event.data.data.num, event.data.data.name, event.data.data.id, event.data.data.imageId);
     }
   });
 }
@@ -66,7 +66,7 @@ function initTabSelectors() {
       changeTab(element.dataset.tab)
     });
   }
-  changeTab("cards");
+  changeTab("create");
 }
 
 
@@ -113,8 +113,8 @@ function saveCardsData() {
   sendMessage({ type: 'save-cards-data', data: JSON.stringify(cardsData) });
 }
 
-function updateImageInfo(num: number, name: string, id: string) {
-  cardsData[num - 1][name] = id;
+function updateImageInfo(num: number, name: string, id: string, imageId: string) {
+  cardsData[num - 1][name] = imageId + "|" + id;
   saveCardsData();
 }
 
@@ -175,7 +175,8 @@ function createCardEntry(num: number, cardData: any) {
 
 
       if (cardData.hasOwnProperty(cardFields[i].name)) {
-        img.src = assetsUrl + cardData[cardFields[i].name];
+        let assetId = cardData[cardFields[i].name].split("|")[1];
+        img.src = assetsUrl + assetId;
       } else {
         img.src = "images/add_image.png";
       }
@@ -304,10 +305,17 @@ function reloadCardEntries() {
   }
 }
 
+function openForgeCards() {
+  sendMessage({ type: 'forje-cards', data: { cardsData: cardsData } });
+}
+
 
 function initCards() {
   sendMessage({ type: 'load-card-fields', data: "" });
   document.getElementById("add-card")?.addEventListener("click", () => { addEmptyCard() });
+  document.getElementById("forge-cards")?.addEventListener("click", () => { openForgeCards() });
+
+
 }
 
 

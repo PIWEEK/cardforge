@@ -64,6 +64,11 @@ function findByName(parent: PenpotFrame, name: string) {
         let child = parent.children[i];
         if ((child.hasOwnProperty("name")) && (child["name"] === name)) {
             return child;
+        } if (child.children?.length > 0) {
+            let inner = findByName((child as PenpotFrame), name);
+            if (inner) {
+                return inner;
+            }
         }
     }
 }
@@ -139,9 +144,70 @@ function createImage(data: Uint8Array, mimeType: string, num: number, name: stri
 
             const images = (penpot.currentPage.findShapes({ name: "_Images" })[0] as PenpotFrame);
             images.appendChild(shape);
-            penpot.ui.sendMessage({ "type": "IMAGE_CREATED", "data": { "num": num, "name": name, "id": shape.fills[0].fillImage?.id } });
+            penpot.ui.sendMessage({ "type": "IMAGE_CREATED", "data": { "num": num, "name": name, "id": shape.fills[0].fillImage?.id, "imageId": shape.id } });
         })
         .catch((err) => console.error(err));
+}
+
+function forjeCards(cardsData: []) {
+    let output: PenpotFrame;
+    let shapes = penpot.currentPage.findShapes({ name: "Output" })
+    if (shapes.length > 0) {
+        shapes[0].remove();
+    }
+
+    output = penpot.createFrame();
+    output.name = "Output";
+    output.y = 500;
+    output.resize(794, 1123);
+    let flex = output.addFlexLayout();
+    flex.columnGap = 30;
+    flex.wrap = "wrap"; //TODO API BUG
+    flex.justifyContent = "center";
+    flex.alignContent = "start";
+
+    console.log(flex);
+
+
+    const baseCard = (penpot.currentPage.findShapes({ name: "Front" })[0] as PenpotFrame);
+
+    let card2: PenpotFrame;
+    for (let i = 0; i < cardsData.length; i++) {
+        let cardData = cardsData[i];
+        card2 = (baseCard.clone() as PenpotFrame)
+        card2.name = "card" + String(i + 1).padStart(2, '0');
+        for (var prop in cardData) {
+            if (cardData.hasOwnProperty(prop)) {
+                let field = findByName(card2, prop);
+                if (field.type == "text") {
+                    field.characters = cardData[prop];
+                } else {
+                    let imageId = cardData[prop].split("|")[0];
+                    let image = penpot.currentPage.getShapeById(imageId);
+                    field.fills = image.fills;
+                }
+            }
+        }
+
+
+        output.appendChild(card2);
+
+        // const card = findByName(root, "Card");
+        // console.log("Card: ", card);
+        // let card2 = card.clone();
+        // card2.name = 'card01';
+        // card2.x += 500;
+        // console.log("Card2: ", card2);
+        // let text = findByName(card2, "#name");
+        // text.characters = "Inventores";
+        //
+        // let image = findByName(card2, "#img");
+        // console.log(image);
+        // image.fills = inventores.fills;
+        // console.log(image.fills);
+    }
+
+    penpot.closePlugin();
 }
 
 
@@ -179,6 +245,8 @@ penpot.ui.onMessage((message: PluginUIEvent) => {
             name: string;
         };
         createImage(data, mimeType, num, name);
+    } else if (message.type === "forje-cards") {
+        forjeCards(message.data.cardsData);
     }
 
 
