@@ -106,11 +106,26 @@
         </div>
 
       </div>
-      <div id="tab-cards" class="tab">CARDS</div>
-      <div id="tab-print" class="tab">PRINT INFO</div>
-      <div id="tab-help" class="tab">HELP</div>
     </div>
-    <script type="module" src="/src/main.ts"></script>
+    <div id="tab-cards" class="tab">
+      <div id="cards-header" class="cards-header">
+        <div class="card-num">NUM</div>
+        <div id="cards-header-actions" class="card-num"></div>
+      </div>
+      <div id="card-list" class="cards-list">
+      </div>
+      <div id="forge-entry" class="forge-entry">
+        <div id="add-card" class="btn-add">
+          <div class="btn-add-img"></div>
+          ADD CARD
+        </div>
+        <button id="forge-cards" class="btn-primary">FORGE CARDS</button>
+      </div>
+    </div>
+    <div id="tab-print" class="tab">PRINT INFO</div>
+    <div id="tab-help" class="tab">HELP</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 
 </html>

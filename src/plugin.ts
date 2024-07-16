@@ -14,7 +14,12 @@ penpot.ui.open("CardForge", "", {
     height: 650,
 });
 
-
+function loadCardsData() {
+    let data = penpot.currentPage.getPluginData("cardsData");
+    console.log("loaded cards data:", data);
+    let cardsData = JSON.parse(data);
+    penpot.ui.sendMessage({ "type": "CARDS_DATA", "data": cardsData });
+}
 
 // see findShapes
 function findByName(parent: PenpotFrame, name: string) {
@@ -73,7 +78,7 @@ function handleCreateDeck(message: DeckEvent) {
     if (root.children.length == 0) {
         createDeck(message);
     } else {
-        penpot.ui.sendMessage("ERROR_DECK_CREATE_PAGE_NOT_EMPTY");
+        penpot.ui.sendMessage({ "type": "ERROR_DECK_CREATE_PAGE_NOT_EMPTY" });
     }
 }
 
@@ -95,11 +100,15 @@ penpot.ui.onMessage((message: PluginUIEvent) => {
         // console.log(image.fills);
 
 
+    } else if (message.type === "create-deck") {
+        handleCreateDeck((message as DeckEvent));
+    } else if (message.type === "save-cards-data") {
+        penpot.currentPage.setPluginData("cardsData", JSON.stringify(message.data));
+    } else if (message.type === "load-cards-data") {
+        loadCardsData();
     }
 
-    if (message.type === "create-deck") {
-        handleCreateDeck((message as DeckEvent));
-    }
+
 });
 
 

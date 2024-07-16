@@ -305,3 +305,139 @@ h3 {
   opacity: 0.5;
   cursor: none;
 }
+
+
+/********************************** CARDS */
+.cards-header {
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  gap: 25px;
+  line-height: 50px;
+  background-color: #efefef;
+  font-weight: bold;
+  padding-left: 25px;
+}
+
+.cards-header div {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.cards-list {
+  width: 100%;
+  height: 375px;
+  overflow: scroll;
+}
+
+.card-entry {
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: left;
+  gap: 25px;
+  padding-left: 25px;
+}
+
+.forge-entry {
+  width: 100%;
+  height: 85px;
+  display: flex;
+  justify-content: space-between;
+  gap: 25px;
+  padding: 25px;
+  border-top: 1px solid #1a5c52;
+  align-items: center;
+}
+
+.card-actions {
+  width: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  visibility: hidden;
+}
+
+.card-actions div {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.card-action-delete {
+  background-image: url("/images/trash.svg");
+  background-repeat: no-repeat;
+}
+
+.card-action-delete:hover {
+  background-image: url("/images/trash-hover.png");
+  background-repeat: no-repeat;
+}
+
+.card-action-copy {
+  background-image: url("/images/copy.svg");
+  background-repeat: no-repeat;
+}
+
+.card-action-copy:hover {
+  background-image: url("/images/copy-hover.png");
+  background-repeat: no-repeat;
+}
+
+.card-entry:hover .card-actions {
+  visibility: visible;
+}
+
+.card-actions img {
+  width: 20px;
+  height: 20px;
+}
+
+.card-num {
+  width: 50px;
+  line-height: 50px;
+}
+
+.card-text {
+  width: 150px;
+  display: flex;
+  align-items: center;
+}
+
+.card-text input {
+  width: 100%;
+  height: 40px;
+  background: #fff;
+  border: 1px solid #acd8d0;
+  box-shadow: inset 0px 2px 2px rgba(21, 51, 60, 0.5);
+  font-family: 'Oswald', sans-serif;
+  font-size: 1rem;
+  padding: 1rem;
+}
+
+.card-img {
+  width: 50px;
+}
+
+.btn-add {
+  display: flex;
+  align-content: center;
+  color: #1a5c52;
+  cursor: pointer;
+}
+
+.btn-add-img {
+  width: 25px;
+  height: 25px;
+  margin-right: 15px;
+  background-image: url("/images/add-card.png");
+  background-repeat: no-repeat;
+}
+
+.btn-add:hover {
+  color: #33b7a4;
+}
+
+.btn-add:hover .btn-add-img {
+  background-image: url("/images/add-card-hover.png");
+}
