@@ -3,8 +3,23 @@ import { PenpotShape, PenpotFrame, PenpotStroke } from '@penpot/plugin-types';
 import type { PluginUIEvent, DeckEvent, CardField } from './model';
 
 
+export const cardSizes = [
+    ["Dixit (80 x 120 mm)", 302, 454],
+    ["Tarot (70 x 120)", 265, 454],
+    ["French tarot (61 x 112)", 231, 423],
+    ["Wonder (65 x 100)", 246, 378],
+    ["Volcano (70 x 110)", 265, 416],
+    ["Euro (59 x 92)", 223, 348],
+    ["Asia (57,5 x 89)", 217, 337],
+    ["Standard (63,5 x 88)", 240, 333],
+    ["USA (56 x 87)", 212, 329],
+    ["Square L (80x80)", 302, 302],
+    ["Desert (50 x 75)", 189, 284],
+    ["Square S (70 x 70)", 265, 265],
+    ["Mini EURO (45 x 68)", 170, 257],
+    ["Mini Asia (43 x 65)", 163, 246],
+    ["Mini USA (41 x 63)", 155, 238]];
 
-console.log("Hello from the plugin!");
 
 let front: PenpotFrame;
 let back: PenpotFrame;
@@ -88,36 +103,38 @@ function createDeck(message: DeckEvent) {
 
     const inside = penpot.createFrame();
     inside.name = "inside";
-    inside.borderRadius = 10;
+    inside.borderRadius = 5;
 
     inside.strokes = [
         {
             strokeColor: '#000000',
             strokeStyle: 'solid',
-            strokeWidth: 10,
+            strokeWidth: 5,
             strokeAlignment: 'inner',
         },
     ];
 
-    console.log(message);
+    let size = parseInt(message.size)
+    let width: number = cardSizes[size][1];
+    let height: number = cardSizes[size][2];
 
-    if (message.size == "P1") {
-        if (message.orientation == "portrait") {
-            front.resize(238, 333);
-            inside.resize(218, 313);
-        } else {
-            front.resize(333, 238);
-            inside.resize(313, 218);
-        }
-        inside.x = 10;
-        inside.y = 10;
+    if (message.orientation == "landscape") {
+        width = cardSizes[size][2];
+        height = cardSizes[size][1];
     }
+
+    front.resize(width, height);
+    inside.resize(width - 10, height - 10);
+    inside.x = 5;
+    inside.y = 5;
 
     front.appendChild(inside);
 
     back = (front.clone() as PenpotFrame);
     back.name = "Back";
     back.x += front.width + 50;
+
+    penpot.closePlugin();
 }
 
 
@@ -128,6 +145,11 @@ function handleCreateDeck(message: DeckEvent) {
     } else {
         penpot.ui.sendMessage({ "type": "ERROR_DECK_CREATE_PAGE_NOT_EMPTY" });
     }
+}
+
+function handleIsPageEmpty() {
+    const root: PenpotFrame = (penpot.currentPage.getShapeById("00000000-0000-0000-0000-000000000000") as PenpotFrame);
+    penpot.ui.sendMessage({ "type": "PAGE_EMPTY", "data": (root.children.length == 0) });
 }
 
 
@@ -166,9 +188,6 @@ function forjeCards(cardsData: []) {
     flex.justifyContent = "center";
     flex.alignContent = "start";
 
-    console.log(flex);
-
-
     const baseCard = (penpot.currentPage.findShapes({ name: "Front" })[0] as PenpotFrame);
 
     let card2: PenpotFrame;
@@ -188,23 +207,7 @@ function forjeCards(cardsData: []) {
                 }
             }
         }
-
-
         output.appendChild(card2);
-
-        // const card = findByName(root, "Card");
-        // console.log("Card: ", card);
-        // let card2 = card.clone();
-        // card2.name = 'card01';
-        // card2.x += 500;
-        // console.log("Card2: ", card2);
-        // let text = findByName(card2, "#name");
-        // text.characters = "Inventores";
-        //
-        // let image = findByName(card2, "#img");
-        // console.log(image);
-        // image.fills = inventores.fills;
-        // console.log(image.fills);
     }
 
     penpot.closePlugin();
@@ -212,24 +215,10 @@ function forjeCards(cardsData: []) {
 
 
 penpot.ui.onMessage((message: PluginUIEvent) => {
-    console.log("message: ", message);
-    if (message.type === "duplicate") {
-        // const card = findByName(root, "Card");
-        // console.log("Card: ", card);
-        // let card2 = card.clone();
-        // card2.name = 'card01';
-        // card2.x += 500;
-        // console.log("Card2: ", card2);
-        // let text = findByName(card2, "#name");
-        // text.characters = "Inventores";
-        //
-        // let image = findByName(card2, "#img");
-        // console.log(image);
-        // image.fills = inventores.fills;
-        // console.log(image.fills);
+    console.log("[plugin] message: ");
+    console.log(message);
 
-
-    } else if (message.type === "create-deck") {
+    if (message.type === "create-deck") {
         handleCreateDeck((message as DeckEvent));
     } else if (message.type === "save-cards-data") {
         penpot.currentPage.setPluginData("cardsData", JSON.stringify(message.data));
@@ -247,6 +236,8 @@ penpot.ui.onMessage((message: PluginUIEvent) => {
         createImage(data, mimeType, num, name);
     } else if (message.type === "forje-cards") {
         forjeCards(message.data.cardsData);
+    } else if (message.type === "is-page-empty") {
+        handleIsPageEmpty();
     }
 
 

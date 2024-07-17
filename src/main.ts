@@ -24,7 +24,7 @@ function sendMessage(message: PluginUIEvent) {
 
 function initMessageListener() {
   window.addEventListener("message", (event) => {
-    console.log("received:");
+    console.log("[main] received:");
     console.log(event);
     if (event.data.type == "ERROR_DECK_CREATE_PAGE_NOT_EMPTY") {
       createDeckShowError(true);
@@ -36,6 +36,12 @@ function initMessageListener() {
       loadCardFields();
     } else if (event.data.type == "IMAGE_CREATED") {
       updateImageInfo(event.data.data.num, event.data.data.name, event.data.data.id, event.data.data.imageId);
+    } else if (event.data.type == "PAGE_EMPTY") {
+      if (event.data.data) {
+        changeTab("create");
+      } else {
+        changeTab("cards");
+      }
     }
   });
 }
@@ -66,11 +72,30 @@ function initTabSelectors() {
       changeTab(element.dataset.tab)
     });
   }
-  changeTab("create");
 }
 
 
 ///////////////////////////// CREATE DECK
+
+
+export const cardSizes = [
+  ["Dixit (80 x 120 mm)", 302, 454],
+  ["Tarot (70 x 120)", 265, 454],
+  ["French tarot (61 x 112)", 231, 423],
+  ["Wonder (65 x 100)", 246, 378],
+  ["Volcano (70 x 110)", 265, 416],
+  ["Euro (59 x 92)", 223, 348],
+  ["Asia (57,5 x 89)", 217, 337],
+  ["Standard (63,5 x 88)", 240, 333],
+  ["USA (56 x 87)", 212, 329],
+  ["Square L (80x80)", 302, 302],
+  ["Desert (50 x 75)", 189, 284],
+  ["Square S (70 x 70)", 265, 265],
+  ["Mini EURO (45 x 68)", 170, 257],
+  ["Mini Asia (43 x 65)", 163, 246],
+  ["Mini USA (41 x 63)", 155, 238]];
+
+
 
 function createDeck(this: HTMLElement, ev: Event) {
   ev.preventDefault();
@@ -95,9 +120,23 @@ function createDeckShowError(show: boolean) {
 
 }
 
+function initcardSizes() {
+  let select = document.getElementById("create-deck-size");
+  select.innerHTML = "";
+  let option;
+  for (let i = 0; i < cardSizes.length; i++) {
+    option = document.createElement("option");
+    option.value = "" + i;
+    option.innerText = cardSizes[i][0];
+    select?.appendChild(option);
+  }
+  select.value = 7;
+}
+
 function initCreateDeck() {
   document.getElementById("create-deck-frm")?.addEventListener("submit", createDeck);
   document.getElementById("box-create-error-close")?.addEventListener("click", () => { createDeckShowError(false) });
+  initcardSizes();
 }
 
 
@@ -195,7 +234,6 @@ function createCardEntry(num: number, cardData: any) {
 
 function addEmptyCard() {
   let cardData = {};
-  console.log(cardsData);
   cardsData.push(cardData);
   let entry = createCardEntry(cardsData.length, cardData);
   cardList?.appendChild(entry);
@@ -273,13 +311,9 @@ function loadCardFields() {
   const cardHeader = document.getElementById("cards-header");
   const cardsHeaderActions = document.getElementById("cards-header-actions");
 
-  console.log("cardHeader", cardHeader);
-  console.log("cardsHeaderActions", cardsHeaderActions);
-
   document.querySelectorAll('.card-header').forEach(e => e.remove());
   for (let i = 0; i < cardFields.length; i++) {
     let field = cardFields[i];
-    console.log(field);
     let div = document.createElement("div");
     div.classList.add("card-header");
     if (field.type == "image") {
@@ -314,10 +348,7 @@ function initCards() {
   sendMessage({ type: 'load-card-fields', data: "" });
   document.getElementById("add-card")?.addEventListener("click", () => { addEmptyCard() });
   document.getElementById("forge-cards")?.addEventListener("click", () => { openForgeCards() });
-
-
 }
-
 
 
 //////////////////////////// ONLOAD
@@ -327,5 +358,6 @@ window.onload = (event) => {
   initTabSelectors();
   initCreateDeck();
   initCards();
-  console.log("page is fully loaded");
+
+  sendMessage({ type: 'is-page-empty', data: "" });
 };
