@@ -64,6 +64,7 @@ function changeTab(name: string) {
 
   document.getElementById("tab-" + name)?.classList.remove("hidden");
 
+  showForgeCards(false);
 }
 
 function initTabSelectors() {
@@ -79,21 +80,21 @@ function initTabSelectors() {
 
 
 export const cardSizes = [
-  ["Dixit (80 x 120 mm)", 302, 454],
-  ["Tarot (70 x 120)", 265, 454],
-  ["French tarot (61 x 112)", 231, 423],
-  ["Wonder (65 x 100)", 246, 378],
-  ["Volcano (70 x 110)", 265, 416],
-  ["Euro (59 x 92)", 223, 348],
-  ["Asia (57,5 x 89)", 217, 337],
-  ["Standard (63,5 x 88)", 240, 333],
-  ["USA (56 x 87)", 212, 329],
-  ["Square L (80x80)", 302, 302],
-  ["Desert (50 x 75)", 189, 284],
-  ["Square S (70 x 70)", 265, 265],
-  ["Mini EURO (45 x 68)", 170, 257],
-  ["Mini Asia (43 x 65)", 163, 246],
-  ["Mini USA (41 x 63)", 155, 238]];
+  ["Dixit (80 x 120 mm)", 945, 1417],
+  ["Tarot (70 x 120 mm)", 827, 1417],
+  ["French tarot (61 x 112 mm)", 720, 1323],
+  ["Wonder (65 x 100 mm)", 768, 1181],
+  ["Volcano (70 x 110 mm)", 827, 1299],
+  ["Euro (59 x 92 mm)", 697, 1086],
+  ["Asia (57,5 x 89 mm)", 679, 1051],
+  ["Standard (Poker) (63,5 x 88 mm)", 750, 1039],
+  ["USA (56 x 87 mm)", 661, 1027],
+  ["Square L (80x80 mm)", 945, 945],
+  ["Desert (50 x 75 mm)", 590, 886],
+  ["Square S (70 x 70 mm)", 827, 827],
+  ["Mini EURO (45 x 68 mm)", 531, 803],
+  ["Mini Asia (43 x 65 mm)", 508, 768],
+  ["Mini USA (41 x 63 mm)", 484, 744]];
 
 
 
@@ -339,15 +340,66 @@ function reloadCardEntries() {
   }
 }
 
-function openForgeCards() {
-  sendMessage({ type: 'forje-cards', data: { cardsData: cardsData } });
+function showForgeCards(showForge: boolean) {
+  if (showForge) {
+    document.getElementById("cards-container")?.classList.add("hidden");
+    document.getElementById("box-forge")?.classList.remove("hidden");
+    document.getElementById("forge-type").value = "standard";
+    document.getElementById("forge-cut-marks").value = "true";
+    changeForgeType();
+    changeCutMarks();
+  } else {
+    document.getElementById("cards-container")?.classList.remove("hidden");
+    document.getElementById("box-forge")?.classList.add("hidden");
+  }
 }
 
+function forgeCards() {
+  let cutMarks = document.getElementById("forge-cut-marks").value;
+  let type = document.getElementById("forge-type").value;
+
+  sendMessage({ type: 'forje-cards', data: { cardsData: cardsData, type: type, cutMarks: cutMarks } });
+}
+
+
+function changeForgeType() {
+  let text = document.getElementById("forge-explain-type")
+  let value = document.getElementById("forge-type").value;
+  if (value == "standard") {
+    text.innerText = "It will generate a frame for each card, and an extra frame for the back.";
+    document.getElementById("forge-cut-marks").disabled = false;
+  } else if (value == "printplay") {
+    text.innerText = "A4 pages with the cards. Cards with the front and the back joined, to cut them together and fold them by the joint.";
+    document.getElementById("forge-cut-marks").disabled = false;
+  } else {
+    text.innerHTML = "It will generate a frame with a <a href='https://kb.tabletopsimulator.com/custom-content/custom-deck/' target='_blank'>card set for Tabletop Simulator</a>.";
+    document.getElementById("forge-cut-marks").value = "false";
+    document.getElementById("forge-cut-marks").disabled = true;
+  }
+  changeCutMarks();
+}
+
+
+function changeCutMarks() {
+  let text = document.getElementById("forge-explain-marks");
+  if (document.getElementById("forge-cut-marks").value == "true") {
+    text.innerText = "Cut marks will be printed to indicate how to cut the cards.";
+  } else {
+    text.innerText = "Cut marks wont't be printed.";
+  }
+}
 
 function initCards() {
   sendMessage({ type: 'load-card-fields', data: "" });
   document.getElementById("add-card")?.addEventListener("click", () => { addEmptyCard() });
-  document.getElementById("forge-cards")?.addEventListener("click", () => { openForgeCards() });
+  document.getElementById("forge-cards")?.addEventListener("click", () => { showForgeCards(true) });
+
+  document.getElementById("box-forge-cancel")?.addEventListener("click", () => { showForgeCards(false) });
+  document.getElementById("box-forge-ok")?.addEventListener("click", () => { forgeCards() });
+  document.getElementById("forge-type")?.addEventListener("change", () => { changeForgeType() });
+  document.getElementById("forge-cut-marks")?.addEventListener("change", () => { changeCutMarks() });
+
+
 }
 
 

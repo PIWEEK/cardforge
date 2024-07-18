@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
   <title>CardForge</title>
   <script type="module" crossorigin src="/index.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DWNgFFPk.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-C260bS1Z.css">
 </head>
 
 <body>
@@ -100,19 +100,72 @@
       </div>
     </div>
     <div id="tab-cards" class="tab">
-      <div id="cards-header" class="cards-header">
-        <div class="card-num">NUM</div>
-        <div id="cards-header-actions" class="card-num"></div>
-      </div>
-      <div id="card-list" class="cards-list">
-      </div>
-      <div id="forge-entry" class="forge-entry">
-        <div id="add-card" class="btn-add">
-          <div class="btn-add-img"></div>
-          ADD CARD
+      <div id="cards-container">
+        <div id="cards-header" class="cards-header">
+          <div class="card-num">NUM</div>
+          <div id="cards-header-actions" class="card-num"></div>
         </div>
-        <button id="forge-cards" class="btn-primary">FORGE CARDS</button>
+        <div id="card-list" class="cards-list">
+        </div>
+        <div id="forge-entry" class="forge-entry">
+          <div id="add-card" class="btn-add">
+            <div class="btn-add-img"></div>
+            ADD CARD
+          </div>
+          <button id="forge-cards" class="btn-primary">FORGE CARDS</button>
+        </div>
       </div>
+      <div id="box-forge" class="box box-small hidden">
+        <div class="art">
+          <img src="images/hammer.svg" />
+        </div>
+        <div class="corner top-left">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner top-right">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom-left">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom-right">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom">
+          <img src="images/marker.svg" />
+        </div>
+
+        <form id="create-deck-frm">
+          <h3>FORGE CARDS</h3>
+          <div class="row-input">
+            <div class="input-text">
+              <label>FORGE TYPE</label>
+              <select id="forge-type">
+                <option value="standard">Standard (print shop)</option>
+                <option value="printplay">Print and play</option>
+                <option value="tabletop">Tabletop Simulator</option>
+              </select>
+            </div>
+            <div class="input-text"><label>WITH CUT MARKS</label>
+              <select id="forge-cut-marks">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+          </div>
+          <div id="forge-explain">
+            <div id="forge-explain-type"></div>
+            <div id="forge-explain-marks"></div>
+            <div id="forge-explain-warning">WARNING: Old outputs will be deleted</div>
+          </div>
+
+          <div class="modal-buttons">
+            <button id="box-forge-cancel" class="btn-primary btn-cancel">Cancel</button>
+            <button id="box-forge-ok" class="btn-primary">Forge!</button>
+          </div>
+        </form>
+      </div>
+
     </div>
     <div id="tab-print" class="tab">PRINT INFO</div>
     <div id="tab-help" class="tab">HELP</div>

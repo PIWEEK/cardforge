@@ -4,21 +4,21 @@ import type { PluginUIEvent, DeckEvent, CardField } from './model';
 
 
 export const cardSizes = [
-    ["Dixit (80 x 120 mm)", 302, 454],
-    ["Tarot (70 x 120)", 265, 454],
-    ["French tarot (61 x 112)", 231, 423],
-    ["Wonder (65 x 100)", 246, 378],
-    ["Volcano (70 x 110)", 265, 416],
-    ["Euro (59 x 92)", 223, 348],
-    ["Asia (57,5 x 89)", 217, 337],
-    ["Standard (63,5 x 88)", 240, 333],
-    ["USA (56 x 87)", 212, 329],
-    ["Square L (80x80)", 302, 302],
-    ["Desert (50 x 75)", 189, 284],
-    ["Square S (70 x 70)", 265, 265],
-    ["Mini EURO (45 x 68)", 170, 257],
-    ["Mini Asia (43 x 65)", 163, 246],
-    ["Mini USA (41 x 63)", 155, 238]];
+    ["Dixit (80 x 120 mm)", 945, 1417],
+    ["Tarot (70 x 120 mm)", 827, 1417],
+    ["French tarot (61 x 112 mm)", 720, 1323],
+    ["Wonder (65 x 100 mm)", 768, 1181],
+    ["Volcano (70 x 110 mm)", 827, 1299],
+    ["Euro (59 x 92 mm)", 697, 1086],
+    ["Asia (57,5 x 89 mm)", 679, 1051],
+    ["Standard (Poker) (63,5 x 88 mm)", 750, 1039],
+    ["USA (56 x 87 mm)", 661, 1027],
+    ["Square L (80x80 mm)", 945, 945],
+    ["Desert (50 x 75 mm)", 590, 886],
+    ["Square S (70 x 70 mm)", 827, 827],
+    ["Mini EURO (45 x 68 mm)", 531, 803],
+    ["Mini Asia (43 x 65 mm)", 508, 768],
+    ["Mini USA (41 x 63 mm)", 484, 744]];
 
 
 let front: PenpotFrame;
@@ -28,6 +28,7 @@ penpot.ui.open("CardForge", "", {
     width: 1200,
     height: 650,
 });
+
 
 
 function loadCardsData() {
@@ -103,13 +104,13 @@ function createDeck(message: DeckEvent) {
 
     const inside = penpot.createFrame();
     inside.name = "inside";
-    inside.borderRadius = 5;
+    inside.borderRadius = 50;
 
     inside.strokes = [
         {
             strokeColor: '#000000',
             strokeStyle: 'solid',
-            strokeWidth: 5,
+            strokeWidth: 12,
             strokeAlignment: 'inner',
         },
     ];
@@ -124,15 +125,15 @@ function createDeck(message: DeckEvent) {
     }
 
     front.resize(width, height);
-    inside.resize(width - 10, height - 10);
-    inside.x = 5;
-    inside.y = 5;
+    inside.resize(width - 48, height - 48);
+    inside.x = 24;
+    inside.y = 24;
 
     front.appendChild(inside);
 
     back = (front.clone() as PenpotFrame);
     back.name = "Back";
-    back.x += front.width + 50;
+    back.x += front.width + 100;
 
     penpot.closePlugin();
 }
@@ -171,44 +172,247 @@ function createImage(data: Uint8Array, mimeType: string, num: number, name: stri
         .catch((err) => console.error(err));
 }
 
-function forjeCards(cardsData: []) {
-    let output: PenpotFrame;
+
+
+function cloneCard(card, cardData, cardNum) {
+    let card2 = (card.clone() as PenpotFrame)
+    card2.name = "card" + cardNum.padStart(2, '0');
+    for (var prop in cardData) {
+        if (cardData.hasOwnProperty(prop)) {
+            let field = findByName(card2, prop);
+            if (field.type == "text") {
+                field.characters = cardData[prop];
+            } else {
+                let imageId = cardData[prop].split("|")[0];
+                let image = penpot.currentPage.getShapeById(imageId);
+                field.fills = image.fills;
+            }
+        }
+    }
+    return card2;
+}
+
+function addCard(output, card, x, y) {
+    card.x = x;
+    card.y = y;
+
+    output.appendChild(card);
+
+    x += card.width;
+    if ((x + card.width) > output.width) {
+        x = 0;
+        y += card.height;
+    }
+    return [x, y];
+}
+
+
+function addCutMarks(frame: PenpotFrame, clone = true) {
+    let cutMFrame = penpot.createFrame();
+    cutMFrame.name = "cutMFrame";
+    cutMFrame.resize(frame.width + 200, frame.height + 200);
+
+    let rect = penpot.createRectangle();
+    rect.resize(200, 2);
+    rect.x = 0;
+    rect.y = 98;
+    cutMFrame.appendChild(rect);
+
+    rect = penpot.createRectangle();
+    rect.resize(200, 2);
+    rect.x = cutMFrame.width - 200;
+    rect.y = 98;
+    cutMFrame.appendChild(rect);
+
+    rect = penpot.createRectangle();
+    rect.resize(200, 2);
+    rect.x = 0;
+    rect.y = cutMFrame.height - 100;
+    cutMFrame.appendChild(rect);
+
+    rect = penpot.createRectangle();
+    rect.resize(200, 2);
+    rect.x = cutMFrame.width - 200;
+    rect.y = cutMFrame.height - 100;
+    cutMFrame.appendChild(rect);
+
+
+    rect = penpot.createRectangle();
+    rect.resize(2, 200);
+    rect.x = 98;
+    rect.y = 0;
+    cutMFrame.appendChild(rect);
+
+    rect = penpot.createRectangle();
+    rect.resize(2, 200);
+    rect.x = cutMFrame.width - 100;
+    rect.y = 0;
+    cutMFrame.appendChild(rect);
+
+    rect = penpot.createRectangle();
+    rect.resize(2, 200);
+    rect.x = 98;
+    rect.y = cutMFrame.height - 200;
+    cutMFrame.appendChild(rect);
+
+    rect = penpot.createRectangle();
+    rect.resize(2, 200);
+    rect.x = cutMFrame.width - 100;
+    rect.y = cutMFrame.height - 200;
+    cutMFrame.appendChild(rect);
+
+    if (clone) {
+        frame = (frame.clone() as PenpotFrame);
+    }
+    frame.x = 100;
+    frame.y = 100;
+    cutMFrame.appendChild(frame);
+
+    return cutMFrame;
+}
+
+function countRectsFit(rectA, rectB) {
+    const countWidth = Math.floor(rectA.width / rectB.width);
+    const countHeight = Math.floor(rectA.height / rectB.height);
+    return countWidth * countHeight;
+}
+
+function forjeCards(cardsData: [], type: string, cutMarks: boolean) {
+    console.log("start forjecards", type, cutMarks);
     let shapes = penpot.currentPage.findShapes({ name: "Output" })
     if (shapes.length > 0) {
         shapes[0].remove();
     }
 
+
+    let baseFront = (penpot.currentPage.findShapes({ name: "Front" })[0] as PenpotFrame);
+    let baseBack = (penpot.currentPage.findShapes({ name: "Back" })[0] as PenpotFrame);
+
+    let card: PenpotFrame;
+    let output: PenpotFrame;
+    let tmpFront: PenpotFrame;
+    let tmpBack: PenpotFrame;
+
+    let x = baseFront.x;
+    let y = baseFront.y + baseFront.height + 400;
+
     output = penpot.createFrame();
     output.name = "Output";
-    output.y = 500;
-    output.resize(794, 1123);
-    let flex = output.addFlexLayout();
-    flex.columnGap = 30;
-    flex.wrap = "wrap"; //TODO API BUG
-    flex.justifyContent = "center";
-    flex.alignContent = "start";
+    output.x = x;
+    output.y = y;
 
-    const baseCard = (penpot.currentPage.findShapes({ name: "Front" })[0] as PenpotFrame);
+    console.log("y: " + y)
 
-    let card2: PenpotFrame;
-    for (let i = 0; i < cardsData.length; i++) {
-        let cardData = cardsData[i];
-        card2 = (baseCard.clone() as PenpotFrame)
-        card2.name = "card" + String(i + 1).padStart(2, '0');
-        for (var prop in cardData) {
-            if (cardData.hasOwnProperty(prop)) {
-                let field = findByName(card2, prop);
-                if (field.type == "text") {
-                    field.characters = cardData[prop];
-                } else {
-                    let imageId = cardData[prop].split("|")[0];
-                    let image = penpot.currentPage.getShapeById(imageId);
-                    field.fills = image.fills;
+    if (type == "standard") {
+
+        if (cutMarks) {
+            tmpFront = addCutMarks(baseFront);
+            tmpBack = addCutMarks(baseBack);
+
+            baseFront = tmpFront;
+            baseBack = tmpBack;
+        }
+
+        output.resize(baseFront.width * (cardsData.length + 1), baseFront.height);
+    } else if (type == "tabletop") {
+        output.resize(baseFront.width * 10, baseFront.height * 7);
+    }
+
+    if ((type == "tabletop") || (type == "standard")) {
+        for (let i = 0; i < cardsData.length; i++) {
+            card = cloneCard(baseFront, cardsData[i], String(i + 1));
+            [x, y] = addCard(output, card, x, y);
+        }
+
+        card = (baseBack.clone() as PenpotFrame);
+        card.x = output.width - card.width;
+        card.y = output.y + output.height - card.height;
+        output.appendChild(card);
+    } else if (type == "printplay") {
+        tmpFront = penpot.createFrame();
+        tmpFront.name = "tmpFront";
+        tmpFront.resize(baseFront.width, baseFront.height * 2);
+        let backClone = baseBack.clone();
+        backClone.rotate(180);
+        tmpFront.appendChild(backClone);
+        backClone.x = 0;
+        backClone.y = 0;
+        let frontClone = baseFront.clone();
+        tmpFront.appendChild(frontClone);
+        frontClone.x = 0;
+        frontClone.y = frontClone.height;
+        if (cutMarks) {
+            tmpFront = addCutMarks(tmpFront, false);
+        }
+        baseFront = tmpFront;
+
+
+        // A4
+
+
+        let page: PenpotFrame;
+        let cardsPerPage: number;
+        let width: number;
+        let height: number;
+        let fitPortrait = countRectsFit({ width: 2480, height: 3508 }, { width: baseFront.width, height: baseFront.height });
+        let fitLandscape = countRectsFit({ width: 3508, height: 2480 }, { width: baseFront.width, height: baseFront.height });
+
+        console.log("fitPortrait ", fitPortrait);
+        console.log("fitLandscape ", fitLandscape);
+
+        if (fitPortrait >= fitLandscape) {
+            width = 2480;
+            height = 3508;
+            cardsPerPage = fitPortrait;
+        } else {
+            width = 3508;
+            height = 2480;
+            cardsPerPage = fitLandscape;
+        }
+
+        let numPages = Math.ceil(cardsData.length / cardsPerPage);
+        let numCard = 0;
+
+        output.resize(width, (height + 100) * numPages);
+
+
+        let cardsPerLine = Math.floor(width / baseFront.width);
+        let linesPerPage = Math.floor(height / baseFront.height);
+        let gapH = Math.floor((width - cardsPerLine * baseFront.width) / (cardsPerLine + 1));
+        let gapV = Math.floor((height - linesPerPage * baseFront.height) / (linesPerPage + 1));
+
+        for (let i = 0; i < numPages; i++) {
+            page = penpot.createFrame();
+            page.name = "Page " + String(i + 1).padStart(2, '0');
+            page.resize(width, height);
+            page.x = output.x;
+            page.y = output.y + i * (height + 100);
+
+            x = page.x + gapH;
+            y = page.y;
+
+            for (let j = 0; j < cardsPerPage; j++) {
+                if (j % cardsPerLine == 0) {
+                    y += gapV;
+                }
+
+                card = cloneCard(baseFront, cardsData[numCard], String(numCard + 1));
+                [x, y] = addCard(page, card, x, y);
+                x += gapH;
+                numCard++;
+                if (numCard >= cardsData.length) {
+                    break;
                 }
             }
+            output.appendChild(page);
+
+            console.log("page y " + page.y);
         }
-        output.appendChild(card2);
+
     }
+
+    tmpFront?.remove();
+    tmpBack?.remove();
 
     penpot.closePlugin();
 }
@@ -235,7 +439,7 @@ penpot.ui.onMessage((message: PluginUIEvent) => {
         };
         createImage(data, mimeType, num, name);
     } else if (message.type === "forje-cards") {
-        forjeCards(message.data.cardsData);
+        forjeCards(message.data.cardsData, message.data.type, (message.data.cutMarks == "true"));
     } else if (message.type === "is-page-empty") {
         handleIsPageEmpty();
     }

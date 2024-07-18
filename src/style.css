@@ -78,7 +78,7 @@ h3 {
   flex-direction: column;
   font-family: 'Alegreya', serif;
   justify-content: center;
-  margin: 90px auto auto;
+  margin: 70px auto auto;
   min-width: 600px;
   padding: 55px 30px 15px;
   position: relative;
@@ -87,6 +87,7 @@ h3 {
 
 .box.box-small {
   width: 600px;
+  height: 420px;
 }
 
 .box .art {
@@ -308,6 +309,12 @@ h3 {
 }
 
 
+.btn-primary.btn-cancel {
+  background: linear-gradient(180deg, #372e1f 8.84%, #6a3938 81.77%, #b73f55 100%);
+  border: 2px solid #5e4d47;
+}
+
+
 /********************************** CARDS */
 .cards-header {
   width: 100%;
@@ -465,4 +472,25 @@ h3 {
 
 .btn-add:hover .btn-add-img {
   background-image: url("/images/add-card-hover.png");
+}
+
+
+/********************************  FORGE */
+
+
+#box-forge .modal-buttons {
+  justify-content: space-around;
+}
+
+#box-forge .modal-buttons .btn-primary {
+  margin-left: 0;
+}
+
+#forge-explain {
+  margin-top: 25px;
+  height: 100px;
+}
+
+#forge-explain-warning {
+  color: #6a3938;
 }
