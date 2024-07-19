@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
   <title>CardForge</title>
   <script type="module" crossorigin src="/index.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-C260bS1Z.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-D7Nk2lAD.css">
 </head>
 
 <body>
@@ -20,7 +20,6 @@
     <div class="tabs">
       <div id="ts-create" data-tab="create" class="tab-selector selected">CREATE DECK</div>
       <div id="ts-cards" data-tab="cards" class="tab-selector">CARDS</div>
-      <div id="ts-print" data-tab="print" class="tab-selector">PRINT INFO</div>
       <div id="ts-help" data-tab="help" class="tab-selector">HELP</div>
     </div>
   </div>
@@ -167,8 +166,89 @@
       </div>
 
     </div>
-    <div id="tab-print" class="tab">PRINT INFO</div>
-    <div id="tab-help" class="tab">HELP</div>
+    <div id="tab-help" class="tab">
+      <div id="box-help" class="box box-small">
+        <div class="art">
+          <img src="images/help.svg" />
+        </div>
+        <div class="corner top-left">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner top-right">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom-left">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom-right">
+          <img src="images/corner.svg" />
+        </div>
+        <div class="corner bottom">
+          <img src="images/marker.svg" />
+        </div>
+
+
+        <h3>HOW TO USE CARDFORGE</h3>
+        <div id="help-text">
+          <div id="help-text-0" class="help-text">
+            <h4>Create a new Deck</h4>
+            <p>Go to an empty page. Open the plugin. Choose a name for the deck, select a size and orientation, and
+              click "Create Deck."</p>
+            <p>The plugin will set the name of the page and create frames for the front and back of the card.</p>
+            <p>These frames have a bleed area (see further on) and a border. Feel free to modify them according to
+              your needs.</p>
+          </div>
+          <div id="help-text-1" class="help-text hidden">
+            <h4>Design a base card</h4>
+            <p>Design a card within the Front frame as you wish, but do not change the size or the name of the frame.
+            </p>
+            <p>Add image and text layers for the sections of the card that will differ on each card. These variable
+              layers must have a unique name and start with the character #. For example, #name, #background, #image,
+              #power...</p>
+            <p>Design the back of the cards within the Back frame, but do not change the size or the name of the frame
+              either. The back cannot have variable fields.</p>
+          </div>
+          <div id="help-text-2" class="help-text  hidden">
+            <h4>Cards list</h4>
+            <p>Here you will find a list of all the cards in your deck. Click "Add Card" to create a new card.</p>
+            <p>For each card, you can assign values to the text or image variable fields.</p>
+            <p>You can also duplicate or delete a card.</p>
+            <p>When all the cards are ready, press "Forge Cards" to create them.</p>
+          </div>
+          <div id="help-text-3" class="help-text  hidden">
+            <h4>Forging cards (1/2)</h4>
+            <p>You can create your cards in three different ways</p>
+            <p><b>Standard:</b> This method is for printing at a print shop. They typically require a separate file for
+              each card, so this option generates a list of all the cards. You will need to export
+              each card individually as a separate file to send to the print shop.</p>
+            <p><b>Print and Play:</b> This method is for printing the cards on a regular printer. It will arrange your
+              cards on A4 pages, which you can export and print individually. It also set the front and
+              back of each card together, so you can fold them along the joint to assemble the physical cards.</p>
+          </div>
+          <div id="help-text-4" class="help-text  hidden">
+            <h4>Forging cards (2/2)</h4>
+            <p><b>Tabletop:</b> This method creates a single frame containing all the cards arranged in a 10x7 grid,
+              with the back positioned in the bottom right corner. This format is used by <a
+                href="https://kb.tabletopsimulator.com/custom-content/custom-deck/" target="_blank">Tabletop
+                Simulator</a> and similar software</p>
+            <p>&nbsp;</p>
+            <p>For both Standard and Print and Play, you can also choose to include cut marks to assist you (or the
+              print shop) in cutting the cards.</p>
+          </div>
+          <div id="help-text-5" class="help-text  hidden">
+            <h4>Bleeding area and margins</h4>
+            <p><img src="images/print_info.png" /></p>
+          </div>
+        </div>
+
+        <div class="modal-buttons">
+          <button id="box-help-prev" class="btn-primary">&lt; PREV</button>
+          <div id="help-num">1/5</div>
+          <button id="box-help-next" class="btn-primary">NEXT &gt;</button>
+        </div>
+
+      </div>
+    </div>
   </div>
 </body>
 

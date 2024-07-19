@@ -63,7 +63,6 @@ function changeTab(name: string) {
   }
 
   document.getElementById("tab-" + name)?.classList.remove("hidden");
-
   showForgeCards(false);
 }
 
@@ -217,6 +216,7 @@ function createCardEntry(num: number, cardData: any) {
       if (cardData.hasOwnProperty(cardFields[i].name)) {
         let assetId = cardData[cardFields[i].name].split("|")[1];
         img.src = assetsUrl + assetId;
+        div.classList.add("card-image-full");
       } else {
         img.src = "images/add_image.png";
       }
@@ -297,6 +297,7 @@ async function saveCardImage(num: number, name: string, img: HTMLImageElement, e
 
       const imageUrl = URL.createObjectURL(new Blob([data], { type: mimeType }));
       img.src = imageUrl;
+      img.parentNode.classList.add("card-image-full");
 
       sendMessage({ type: 'create-image-data', data: { data, mimeType, num, name } });
       fileInput.value = '';
@@ -358,7 +359,7 @@ function forgeCards() {
   let cutMarks = document.getElementById("forge-cut-marks").value;
   let type = document.getElementById("forge-type").value;
 
-  sendMessage({ type: 'forje-cards', data: { cardsData: cardsData, type: type, cutMarks: cutMarks } });
+  sendMessage({ type: 'forge-cards', data: { cardsData: cardsData, type: type, cutMarks: cutMarks } });
 }
 
 
@@ -398,9 +399,35 @@ function initCards() {
   document.getElementById("box-forge-ok")?.addEventListener("click", () => { forgeCards() });
   document.getElementById("forge-type")?.addEventListener("change", () => { changeForgeType() });
   document.getElementById("forge-cut-marks")?.addEventListener("change", () => { changeCutMarks() });
+}
 
+
+//////////////////////////// HELP
+
+let helpPage = 0;
+let helpTexts = document.querySelectorAll(".help-text");
+
+function advanceHelp(num: number) {
+  helpPage = (helpPage + num + 6) % 6;
+
+  for (const element of helpTexts) {
+    element.classList.add("hidden");
+  }
+  document.getElementById("help-text-" + helpPage)?.classList.remove("hidden");
+
+
+  document.getElementById("help-num").innerText = (helpPage + 1) + "/6";
 
 }
+
+function initHelp() {
+  helpPage = 0;
+  advanceHelp(0);
+  document.getElementById("box-help-prev")?.addEventListener("click", () => { advanceHelp(-1) });
+  document.getElementById("box-help-next")?.addEventListener("click", () => { advanceHelp(1) });
+}
+
+
 
 
 //////////////////////////// ONLOAD
@@ -410,6 +437,7 @@ window.onload = (event) => {
   initTabSelectors();
   initCreateDeck();
   initCards();
+  initHelp();
 
   sendMessage({ type: 'is-page-empty', data: "" });
 };

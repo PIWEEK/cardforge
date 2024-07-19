@@ -434,13 +434,13 @@ h3 {
   cursor: pointer;
 }
 
-.card-image img:hover {
+.card-image-full img:hover {
   position: relative;
   z-index: 1000;
   transform: scale(5);
 }
 
-.card-entry:nth-child(-n + 2) .card-image img:hover {
+.card-entry:nth-child(-n + 2) .card-image-full img:hover {
   transform: scale(5) translateY(15px);
 }
 
@@ -493,4 +493,28 @@ h3 {
 
 #forge-explain-warning {
   color: #6a3938;
+}
+
+/****************************** HELP */
+#box-help .modal-buttons {
+  justify-content: space-around;
+}
+
+#box-help .modal-buttons .btn-primary {
+  margin-left: 0;
+}
+
+.help-text {
+  height: 225px;
+}
+
+.help-text img {
+  height: 225px;
+}
+
+.help-text img:hover {
+  position: relative;
+  z-index: 1000;
+  transform: scale(2.3) translateY(-30px);
+  border: 2px solid black;
 }

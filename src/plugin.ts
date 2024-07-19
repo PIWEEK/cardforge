@@ -277,8 +277,8 @@ function countRectsFit(rectA, rectB) {
     return countWidth * countHeight;
 }
 
-function forjeCards(cardsData: [], type: string, cutMarks: boolean) {
-    console.log("start forjecards", type, cutMarks);
+function forgeCards(cardsData: [], type: string, cutMarks: boolean) {
+    console.log("start forgecards", type, cutMarks);
     let shapes = penpot.currentPage.findShapes({ name: "Output" })
     if (shapes.length > 0) {
         shapes[0].remove();
@@ -438,8 +438,8 @@ penpot.ui.onMessage((message: PluginUIEvent) => {
             name: string;
         };
         createImage(data, mimeType, num, name);
-    } else if (message.type === "forje-cards") {
-        forjeCards(message.data.cardsData, message.data.type, (message.data.cutMarks == "true"));
+    } else if (message.type === "forge-cards") {
+        forgeCards(message.data.cardsData, message.data.type, (message.data.cutMarks == "true"));
     } else if (message.type === "is-page-empty") {
         handleIsPageEmpty();
     }
