@@ -1,5 +1,5 @@
 
-import { PenpotShape, PenpotFrame, PenpotStroke } from '@penpot/plugin-types';
+import { Shape, Board } from '@penpot/plugin-types';
 import type { PluginUIEvent, DeckEvent, CardField } from './model';
 
 
@@ -21,8 +21,8 @@ export const cardSizes = [
     ["Mini USA (41 x 63 mm)", 484, 744]];
 
 
-let front: PenpotFrame;
-let back: PenpotFrame;
+let front: Board;
+let back: Board;
 
 penpot.ui.open("CardForge", "", {
     width: 1200,
@@ -30,33 +30,33 @@ penpot.ui.open("CardForge", "", {
 });
 
 
-
 function loadCardsData() {
-    let data = penpot.currentPage.getPluginData("cardsData");
+    let data = penpot.currentPage?.getPluginData("cardsData");
     console.log("loaded cards data:", data);
-    let cardsData = JSON.parse(data);
-    penpot.ui.sendMessage({ "type": "CARDS_DATA", "data": cardsData });
+    if (data) {
+        penpot.ui.sendMessage({ "type": "CARDS_DATA", "data": JSON.parse(data) });
+    }
 }
 
 
-function isValidField(shape: PenpotShape) {
+function isValidField(shape: Shape) {
     return (shape.name?.startsWith("#") &&
         ((shape.type == "text") ||
-            ((shape.type == "rect") &&
+            ((shape.type == "rectangle") &&
                 (shape.fills?.length) == 1 &&
                 (shape["fills"][0]["fillImage"]))));
 }
 
 
-function findFields(frame: PenpotFrame, fields: CardField[]) {
-    for (let i = 0; i < frame.children.length; i++) {
-        let child = frame.children[i];
+function findFields(board: Board, fields: CardField[]) {
+    for (let i = 0; i < board.children.length; i++) {
+        let child = board.children[i];
         if (isValidField(child)) {
             let type = (child["type"] == "text") ? "text" : "image";
             fields.push({ "name": child["name"], "type": type, "id": child.id });
         }
         if (child.hasOwnProperty("children")) {
-            findFields((child as PenpotFrame), fields);
+            findFields((child as Board), fields);
         }
     }
     return fields;
@@ -64,8 +64,8 @@ function findFields(frame: PenpotFrame, fields: CardField[]) {
 
 
 function loadCardFields() {
-    const root: PenpotFrame = (penpot.currentPage.getShapeById("00000000-0000-0000-0000-000000000000") as PenpotFrame);
-    const card = (findByName(root, "Front") as PenpotFrame);
+    const root: Board = (penpot.currentPage?.getShapeById("00000000-0000-0000-0000-000000000000") as Board);
+    const card = (findByName(root, "Front") as Board);
 
     const fields = findFields(card, [])
 
@@ -75,72 +75,76 @@ function loadCardFields() {
 
 
 // see findShapes
-function findByName(parent: PenpotFrame, name: string) {
+function findByName(parent: Board, name: string): Shape | undefined {
     for (let i = 0; i < parent.children.length; i++) {
         let child = parent.children[i];
         if ((child.hasOwnProperty("name")) && (child["name"] === name)) {
             return child;
-        } if (child.children?.length > 0) {
-            let inner = findByName((child as PenpotFrame), name);
+        } if ((child as Board).children?.length > 0) {
+            let inner = findByName((child as Board), name);
             if (inner) {
                 return inner;
             }
         }
     }
+    return undefined;
 }
 
 
+
 function createDeck(message: DeckEvent) {
-    penpot.currentPage.name = message.name;
+    if (penpot.currentPage) {
+        penpot.currentPage.name = message.name;
 
-    const images = penpot.createFrame();
-    images.name = "_Images";
-    images.y = - 1000;
-    images.hidden = true;
+        const images = penpot.createBoard();
+        images.name = "_Images";
+        images.y = - 1000;
+        images.hidden = true;
 
 
-    front = penpot.createFrame();
-    front.name = "Front";
+        front = penpot.createBoard();
+        front.name = "Front";
 
-    const inside = penpot.createFrame();
-    inside.name = "inside";
-    inside.borderRadius = 50;
+        const inside = penpot.createBoard();
+        inside.name = "inside";
+        inside.borderRadius = 50;
 
-    inside.strokes = [
-        {
-            strokeColor: '#000000',
-            strokeStyle: 'solid',
-            strokeWidth: 12,
-            strokeAlignment: 'inner',
-        },
-    ];
+        inside.strokes = [
+            {
+                strokeColor: '#000000',
+                strokeStyle: 'solid',
+                strokeWidth: 12,
+                strokeAlignment: 'inner',
+            },
+        ];
 
-    let size = parseInt(message.size)
-    let width: number = cardSizes[size][1];
-    let height: number = cardSizes[size][2];
+        let size = parseInt(message.size)
+        let width: string | number = cardSizes[size][1];
+        let height: string | number = cardSizes[size][2];
 
-    if (message.orientation == "landscape") {
-        width = cardSizes[size][2];
-        height = cardSizes[size][1];
+        if (message.orientation == "landscape") {
+            width = cardSizes[size][2];
+            height = cardSizes[size][1];
+        }
+
+        front.resize((width as number), (height as number));
+        inside.resize((width as number) - 48, (height as number) - 48);
+        inside.x = 24;
+        inside.y = 24;
+
+        front.appendChild(inside);
+
+        back = (front.clone() as Board);
+        back.name = "Back";
+        back.x += front.width + 100;
+
+        penpot.closePlugin();
     }
-
-    front.resize(width, height);
-    inside.resize(width - 48, height - 48);
-    inside.x = 24;
-    inside.y = 24;
-
-    front.appendChild(inside);
-
-    back = (front.clone() as PenpotFrame);
-    back.name = "Back";
-    back.x += front.width + 100;
-
-    penpot.closePlugin();
 }
 
 
 function handleCreateDeck(message: DeckEvent) {
-    const root: PenpotFrame = (penpot.currentPage.getShapeById("00000000-0000-0000-0000-000000000000") as PenpotFrame);
+    const root: Board = (penpot.currentPage?.getShapeById("00000000-0000-0000-0000-000000000000") as Board);
     if (root.children.length == 0) {
         createDeck(message);
     } else {
@@ -149,7 +153,7 @@ function handleCreateDeck(message: DeckEvent) {
 }
 
 function handleIsPageEmpty() {
-    const root: PenpotFrame = (penpot.currentPage.getShapeById("00000000-0000-0000-0000-000000000000") as PenpotFrame);
+    const root: Board = (penpot.currentPage?.getShapeById("00000000-0000-0000-0000-000000000000") as Board);
     penpot.ui.sendMessage({ "type": "PAGE_EMPTY", "data": (root.children.length == 0) });
 }
 
@@ -165,7 +169,7 @@ function createImage(data: Uint8Array, mimeType: string, num: number, name: stri
             shape.x = 0;
             shape.y = 0;
 
-            const images = (penpot.currentPage.findShapes({ name: "_Images" })[0] as PenpotFrame);
+            const images = (penpot.currentPage?.findShapes({ name: "_Images" })[0] as Board);
             images.appendChild(shape);
             penpot.ui.sendMessage({ "type": "IMAGE_CREATED", "data": { "num": num, "name": name, "id": shape.fills[0].fillImage?.id, "imageId": shape.id } });
         })
@@ -173,26 +177,32 @@ function createImage(data: Uint8Array, mimeType: string, num: number, name: stri
 }
 
 
-
-function cloneCard(card, cardData, cardNum) {
-    let card2 = (card.clone() as PenpotFrame)
+function cloneCard(card: Shape, cardData: Record<string, any>, cardNum: string): Board {
+    const card2 = card.clone() as Board;
     card2.name = "card" + cardNum.padStart(2, '0');
-    for (var prop in cardData) {
-        if (cardData.hasOwnProperty(prop)) {
-            let field = findByName(card2, prop);
-            if (field.type == "text") {
-                field.characters = cardData[prop];
-            } else {
-                let imageId = cardData[prop].split("|")[0];
-                let image = penpot.currentPage.getShapeById(imageId);
-                field.fills = image.fills;
+
+    for (const prop in cardData) {
+        if (Object.prototype.hasOwnProperty.call(cardData, prop)) {
+            const field = findByName(card2, prop);
+            if (field) {
+                if (field.type === "text") {
+                    field.characters = cardData[prop];
+                } else {
+                    const imageId = cardData[prop].split("|")[0];
+                    const image = penpot.currentPage?.getShapeById(imageId);
+                    if (image) {
+                        field.fills = image.fills;
+                    }
+                }
             }
         }
     }
+
     return card2;
 }
 
-function addCard(output, card, x, y) {
+
+function addCard(output: Board, card: Board, x: number, y: number) {
     card.x = x;
     card.y = y;
 
@@ -207,71 +217,71 @@ function addCard(output, card, x, y) {
 }
 
 
-function addCutMarks(frame: PenpotFrame, clone = true) {
-    let cutMFrame = penpot.createFrame();
-    cutMFrame.name = "cutMFrame";
-    cutMFrame.resize(frame.width + 200, frame.height + 200);
+function addCutMarks(board: Board, clone = true) {
+    let cutMBoard = penpot.createBoard();
+    cutMBoard.name = "cutMBoard";
+    cutMBoard.resize(board.width + 200, board.height + 200);
 
     let rect = penpot.createRectangle();
     rect.resize(200, 2);
     rect.x = 0;
     rect.y = 98;
-    cutMFrame.appendChild(rect);
+    cutMBoard.appendChild(rect);
 
     rect = penpot.createRectangle();
     rect.resize(200, 2);
-    rect.x = cutMFrame.width - 200;
+    rect.x = cutMBoard.width - 200;
     rect.y = 98;
-    cutMFrame.appendChild(rect);
+    cutMBoard.appendChild(rect);
 
     rect = penpot.createRectangle();
     rect.resize(200, 2);
     rect.x = 0;
-    rect.y = cutMFrame.height - 100;
-    cutMFrame.appendChild(rect);
+    rect.y = cutMBoard.height - 100;
+    cutMBoard.appendChild(rect);
 
     rect = penpot.createRectangle();
     rect.resize(200, 2);
-    rect.x = cutMFrame.width - 200;
-    rect.y = cutMFrame.height - 100;
-    cutMFrame.appendChild(rect);
+    rect.x = cutMBoard.width - 200;
+    rect.y = cutMBoard.height - 100;
+    cutMBoard.appendChild(rect);
 
 
     rect = penpot.createRectangle();
     rect.resize(2, 200);
     rect.x = 98;
     rect.y = 0;
-    cutMFrame.appendChild(rect);
+    cutMBoard.appendChild(rect);
 
     rect = penpot.createRectangle();
     rect.resize(2, 200);
-    rect.x = cutMFrame.width - 100;
+    rect.x = cutMBoard.width - 100;
     rect.y = 0;
-    cutMFrame.appendChild(rect);
+    cutMBoard.appendChild(rect);
 
     rect = penpot.createRectangle();
     rect.resize(2, 200);
     rect.x = 98;
-    rect.y = cutMFrame.height - 200;
-    cutMFrame.appendChild(rect);
+    rect.y = cutMBoard.height - 200;
+    cutMBoard.appendChild(rect);
 
     rect = penpot.createRectangle();
     rect.resize(2, 200);
-    rect.x = cutMFrame.width - 100;
-    rect.y = cutMFrame.height - 200;
-    cutMFrame.appendChild(rect);
+    rect.x = cutMBoard.width - 100;
+    rect.y = cutMBoard.height - 200;
+    cutMBoard.appendChild(rect);
 
     if (clone) {
-        frame = (frame.clone() as PenpotFrame);
+        board = (board.clone() as Board);
     }
-    frame.x = 100;
-    frame.y = 100;
-    cutMFrame.appendChild(frame);
+    board.x = 100;
+    board.y = 100;
+    cutMBoard.appendChild(board);
 
-    return cutMFrame;
+    return cutMBoard;
 }
 
-function countRectsFit(rectA, rectB) {
+function countRectsFit(rectA: { width: number, height: number }, rectB: { width: number, height: number }): number {
     const countWidth = Math.floor(rectA.width / rectB.width);
     const countHeight = Math.floor(rectA.height / rectB.height);
     return countWidth * countHeight;
@@ -279,24 +289,24 @@ function countRectsFit(rectA, rectB) {
 
 function forgeCards(cardsData: [], type: string, cutMarks: boolean) {
     console.log("start forgecards", type, cutMarks);
-    let shapes = penpot.currentPage.findShapes({ name: "Output" })
-    if (shapes.length > 0) {
+    let shapes = penpot.currentPage?.findShapes({ name: "Output" })
+    if (shapes && (shapes.length > 0)) {
         shapes[0].remove();
     }
 
 
-    let baseFront = (penpot.currentPage.findShapes({ name: "Front" })[0] as PenpotFrame);
-    let baseBack = (penpot.currentPage.findShapes({ name: "Back" })[0] as PenpotFrame);
+    let baseFront = (penpot.currentPage?.findShapes({ name: "Front" })[0] as Board);
+    let baseBack = (penpot.currentPage?.findShapes({ name: "Back" })[0] as Board);
 
-    let card: PenpotFrame;
-    let output: PenpotFrame;
-    let tmpFront: PenpotFrame;
-    let tmpBack: PenpotFrame;
+    let card: Board;
+    let output: Board;
+    let tmpFront: Board | null = null;
+    let tmpBack: Board | null = null;
 
     let x = baseFront.x;
     let y = baseFront.y + baseFront.height + 400;
 
-    output = penpot.createFrame();
+    output = penpot.createBoard();
     output.name = "Output";
     output.x = x;
     output.y = y;
@@ -322,12 +332,12 @@ function forgeCards(cardsData: [], type: string, cutMarks: boolean) {
             [x, y] = addCard(output, card, x, y);
         }
 
-        card = (baseBack.clone() as PenpotFrame);
+        card = (baseBack.clone() as Board);
         card.x = output.width - card.width;
         card.y = output.y + output.height - card.height;
         output.appendChild(card);
     } else if (type == "printplay") {
-        tmpFront = penpot.createFrame();
+        tmpFront = penpot.createBoard();
         tmpFront.name = "tmpFront";
         tmpFront.resize(baseFront.width, baseFront.height * 2);
         let backClone = baseBack.clone();
@@ -348,7 +358,7 @@ function forgeCards(cardsData: [], type: string, cutMarks: boolean) {
         // A4
 
 
-        let page: PenpotFrame;
+        let page: Board;
         let cardsPerPage: number;
         let width: number;
         let height: number;
@@ -380,7 +390,7 @@ function forgeCards(cardsData: [], type: string, cutMarks: boolean) {
         let gapV = Math.floor((height - linesPerPage * baseFront.height) / (linesPerPage + 1));
 
         for (let i = 0; i < numPages; i++) {
-            page = penpot.createFrame();
+            page = penpot.createBoard();
             page.name = "Page " + String(i + 1).padStart(2, '0');
             page.resize(width, height);
             page.x = output.x;
@@ -423,7 +433,7 @@ penpot.ui.onMessage((message: PluginUIEvent) => {
     if (message.type === "create-deck") {
         handleCreateDeck((message as DeckEvent));
     } else if (message.type === "save-cards-data") {
-        penpot.currentPage.setPluginData("cardsData", JSON.stringify(message.data));
+        penpot.currentPage?.setPluginData("cardsData", JSON.stringify(message.data));
     } else if (message.type === "load-cards-data") {
         loadCardsData();
     } else if (message.type === "load-card-fields") {

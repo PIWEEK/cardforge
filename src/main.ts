@@ -69,7 +69,7 @@ function changeTab(name: string) {
 function initTabSelectors() {
   for (const element of tabSelectors) {
     element.addEventListener('click', () => {
-      changeTab(element.dataset.tab)
+      changeTab(element.getAttribute('data-tab') as string);
     });
   }
 }
@@ -99,9 +99,9 @@ export const cardSizes = [
 
 function createDeck(this: HTMLElement, ev: Event) {
   ev.preventDefault();
-  let name = document.getElementById("create-deck-name")?.value;
-  let size = document.getElementById("create-deck-size")?.value;
-  let orientation = document.getElementById("create-deck-orientation")?.value;
+  let name = (document.getElementById("create-deck-name") as HTMLInputElement)?.value;
+  let size = (document.getElementById("create-deck-size") as HTMLInputElement)?.value;
+  let orientation = (document.getElementById("create-deck-orientation") as HTMLInputElement)?.value;
 
   sendMessage({ type: 'create-deck', name: name, size: size, orientation: orientation, data: null })
 
@@ -121,16 +121,16 @@ function createDeckShowError(show: boolean) {
 }
 
 function initcardSizes() {
-  let select = document.getElementById("create-deck-size");
+  let select = (document.getElementById("create-deck-size") as HTMLSelectElement);
   select.innerHTML = "";
   let option;
   for (let i = 0; i < cardSizes.length; i++) {
     option = document.createElement("option");
     option.value = "" + i;
-    option.innerText = cardSizes[i][0];
+    option.innerText = cardSizes[i][0].toString();
     select?.appendChild(option);
   }
-  select.value = 7;
+  select.value = "7";
 }
 
 function initCreateDeck() {
@@ -143,7 +143,7 @@ function initCreateDeck() {
 
 ////////////////////////////// CARDS
 
-const cardList = document.getElementById("card-list");
+const cardList = document.getElementById("card-list") as HTMLElement;
 let cardFields: CardField[] = [];
 let cardsData: any[] = [];
 
@@ -261,7 +261,7 @@ function saveCardText(num: number, name: string, val: string) {
   saveCardsData();
 }
 
-
+/*
 function handleImagePreview(fileInput, previewContainer) {
   const file = fileInput.files[0];
 
@@ -283,7 +283,7 @@ function handleImagePreview(fileInput, previewContainer) {
     alert("Please select an image first!");
   }
 }
-
+*/
 
 async function saveCardImage(num: number, name: string, img: HTMLImageElement, event: Event) {
   const fileInput = event.target as HTMLInputElement;
@@ -297,7 +297,10 @@ async function saveCardImage(num: number, name: string, img: HTMLImageElement, e
 
       const imageUrl = URL.createObjectURL(new Blob([data], { type: mimeType }));
       img.src = imageUrl;
-      img.parentNode.classList.add("card-image-full");
+
+      if (img.parentNode instanceof HTMLElement) {
+        img.parentNode.classList.add("card-image-full");
+      }
 
       sendMessage({ type: 'create-image-data', data: { data, mimeType, num, name } });
       fileInput.value = '';
@@ -345,8 +348,8 @@ function showForgeCards(showForge: boolean) {
   if (showForge) {
     document.getElementById("cards-container")?.classList.add("hidden");
     document.getElementById("box-forge")?.classList.remove("hidden");
-    document.getElementById("forge-type").value = "standard";
-    document.getElementById("forge-cut-marks").value = "true";
+    (document.getElementById("forge-type") as HTMLInputElement).value = "standard";
+    (document.getElementById("forge-cut-marks") as HTMLInputElement).value = "true";
     changeForgeType();
     changeCutMarks();
   } else {
@@ -356,34 +359,35 @@ function showForgeCards(showForge: boolean) {
 }
 
 function forgeCards() {
-  let cutMarks = document.getElementById("forge-cut-marks").value;
-  let type = document.getElementById("forge-type").value;
+  let cutMarks = (document.getElementById("forge-cut-marks") as HTMLInputElement).value;
+  let type = (document.getElementById("forge-type") as HTMLInputElement).value;
 
   sendMessage({ type: 'forge-cards', data: { cardsData: cardsData, type: type, cutMarks: cutMarks } });
 }
 
 
 function changeForgeType() {
-  let text = document.getElementById("forge-explain-type")
-  let value = document.getElementById("forge-type").value;
+  const text = document.getElementById("forge-explain-type") as HTMLInputElement;
+  const value = (document.getElementById("forge-type") as HTMLInputElement).value;
+  const cutMarks = document.getElementById("forge-cut-marks") as HTMLInputElement
   if (value == "standard") {
     text.innerText = "It will generate a frame for each card, and an extra frame for the back.";
-    document.getElementById("forge-cut-marks").disabled = false;
+    cutMarks.disabled = false;
   } else if (value == "printplay") {
     text.innerText = "A4 pages with the cards. Cards with the front and the back joined, to cut them together and fold them by the joint.";
-    document.getElementById("forge-cut-marks").disabled = false;
+    cutMarks.disabled = false;
   } else {
     text.innerHTML = "It will generate a frame with a <a href='https://kb.tabletopsimulator.com/custom-content/custom-deck/' target='_blank'>card set for Tabletop Simulator</a>.";
-    document.getElementById("forge-cut-marks").value = "false";
-    document.getElementById("forge-cut-marks").disabled = true;
+    cutMarks.value = "false";
+    cutMarks.disabled = true;
   }
   changeCutMarks();
 }
 
 
 function changeCutMarks() {
-  let text = document.getElementById("forge-explain-marks");
-  if (document.getElementById("forge-cut-marks").value == "true") {
+  let text = document.getElementById("forge-explain-marks") as HTMLInputElement;
+  if ((document.getElementById("forge-cut-marks") as HTMLInputElement).value == "true") {
     text.innerText = "Cut marks will be printed to indicate how to cut the cards.";
   } else {
     text.innerText = "Cut marks wont't be printed.";
@@ -416,7 +420,7 @@ function advanceHelp(num: number) {
   document.getElementById("help-text-" + helpPage)?.classList.remove("hidden");
 
 
-  document.getElementById("help-num").innerText = (helpPage + 1) + "/6";
+  (document.getElementById("help-num") as HTMLInputElement).innerText = (helpPage + 1) + "/6";
 
 }
 
@@ -432,7 +436,7 @@ function initHelp() {
 
 //////////////////////////// ONLOAD
 
-window.onload = (event) => {
+window.onload = (_event) => {
   initMessageListener();
   initTabSelectors();
   initCreateDeck();
