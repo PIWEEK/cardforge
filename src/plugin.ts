@@ -69,7 +69,7 @@ function loadCardFields() {
 
     const fields = findFields(card, [])
 
-    const assetsUrl = "https://early.penpot.dev/assets/by-file-media-id/";
+    const assetsUrl = "https://penpot.app/assets/by-file-media-id/";
     penpot.ui.sendMessage({ "type": "CARD_FIELDS", "data": { fields: fields, assetsUrl: assetsUrl } });
 }
 
@@ -200,7 +200,7 @@ function addCard(output, card, x, y) {
 
     x += card.width;
     if ((x + card.width) > output.width) {
-        x = 0;
+        x = output.x;
         y += card.height;
     }
     return [x, y];
@@ -300,8 +300,6 @@ function forgeCards(cardsData: [], type: string, cutMarks: boolean) {
     output.name = "Output";
     output.x = x;
     output.y = y;
-
-    console.log("y: " + y)
 
     if (type == "standard") {
 
