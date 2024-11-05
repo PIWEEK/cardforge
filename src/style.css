@@ -519,3 +519,7 @@ h3 {
   transform: scale(2.3) translateY(-30px);
   border: 2px solid black;
 }
+
+.help-text p {
+  margin-block-end: .5rem;
+}

@@ -69,7 +69,7 @@ function loadCardFields() {
 
     const fields = findFields(card, [])
 
-    const assetsUrl = "https://penpot.app/assets/by-file-media-id/";
+    const assetsUrl = "https://design.penpot.app/assets/by-file-media-id/";
     penpot.ui.sendMessage({ "type": "CARD_FIELDS", "data": { fields: fields, assetsUrl: assetsUrl } });
 }
 
