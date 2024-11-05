@@ -8,7 +8,7 @@ The Cardforge plugin for [Penpot](penpot.app) allows you to create decks for boa
 
 ## Installation
 
-To install the component, just open the plugin manager in Penpot and paste this URL: https://cardforge-dn5.pages.dev/assets/manifest.json
+To install the component, just open the plugin manager in Penpot and paste this URL: https://cardforge-dn5.pages.dev/manifest.json
 
 ## Usage
 
