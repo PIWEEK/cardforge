@@ -1,60 +1,77 @@
-# Penpot Plugin Starter Template
+# Cardforge | Penpot Plugin
 
-This repository is designed to be your starting point for creating plugins for Penpot. Follow these instructions to set up your development environment and start building your own Penpot plugins.
+![](https://raw.githubusercontent.com/PIWEEK/cardforge/d25f9f0d062c040b668a82ac0256192b5ad3080e/public/images/main-logo.svg)
 
-## Getting Started
+## Introduction
 
-### Clone the Repository
+The Cardforge plugin for [Penpot](penpot.app) allows you to create decks for board games. You only have to design the front and the back of a card, create a list of all the cards that you want, and the plugin will generate an output to print the cards or even use on digital game systems.
 
-Begin by cloning this repository to your local machine. Use the following command in your terminal:
+## Installation
 
-```bash
-git clone --depth 1 https://github.com/penpot/penpot-plugin-starter-template penpot-plugin
-```
+To install the component, just open the plugin manager in Penpot and paste this URL: https://cardforge-dn5.pages.dev/assets/manifest.json
 
-This command clones the latest version of the template into a folder named `penpot-plugin`.
+## Usage
 
-### Configure the Plugin
+### Create a new Deck
 
-Next, you need to edit the plugin's configuration file:
+Go to an empty page. Open the plugin. Choose a name for the deck, select a size and orientation, and click "Create Deck."
 
-1. Navigate to the `penpot-plugin` directory.
-2. Open the `manifest.json` file located in the `/public` folder.
-3. Make any necessary changes to the configuration. Note that any modifications to this file require you to restart the development server for changes to take effect.
+![](https://github.com/PIWEEK/cardforge/blob/main/screenshots/create_deck.jpg?raw=true)
 
-### Run the Development Server
+The plugin will set the name of the page and create frames for the front and back of the card.
 
-To start the development server, run the following command in your terminal:
+These frames have a bleed area (see further on) and a border. Feel free to modify them according to your needs.
 
-```bash
-npm run dev
-```
+### Design a base card
 
-Once the server is running, open your web browser and go to `http://localhost:4400` to view your plugin in action. Now is ready to be loaded in Penpot.
+Design a card within the Front frame as you wish, but do not change the size or the name of the frame.
 
-## Development
+Add image and text layers for the sections of the card that will differ on each card. These variable layers must have a unique name and start with the character #. For example, #name, #background, #image, #power...
 
-### Technologies Used
+Design the back of the cards within the Back frame, but do not change the size or the name of the frame either. The back cannot have variable fields.
 
-This plugin template uses several key technologies:
+![](https://github.com/PIWEEK/cardforge/blob/main/screenshots/design.jpg?raw=true)
 
-- **TypeScript**
-- **Vite**
-- **Web Components**
 
-### Libraries Included
+### Cards list
 
-The template includes two Penpot libraries to assist in your development:
+Here you will find a list of all the cards in your deck. Click "Add Card" to create a new card.
 
-- `@penpot/plugin-styles`: This library provides utility functions and resources to help you style your components consistently with Penpot's design system.
-- `@penpot/plugin-types`: This library includes types and API descriptions for interacting with the Penpot plugin API, facilitating the development of plugins that can communicate effectively with the Penpot app.
+For each card, you can assign values to the text or image variable fields.
 
-## Build Your Plugin
+![](https://github.com/PIWEEK/cardforge/blob/main/screenshots/cards.jpg?raw=true)
 
-When you're ready to build your plugin for production, run the following command:
+You can also duplicate or delete a card.
 
-```bash
-npm run build
-```
+When all the cards are ready, press "Forge Cards" to create them.
 
-This command compiles your TypeScript code and assets into JavaScript, creating a `dist` folder that contains all the files necessary to deploy your plugin.
+
+### Forging cards
+
+![](https://github.com/PIWEEK/cardforge/blob/main/screenshots/forge.jpg?raw=true)
+
+You can create your cards in three different ways
+
+**Standard**: This method is for printing at a print shop. They typically require a separate file for each card, so this option generates a list of all the cards to export each one individually.
+
+**Print and Play**: This method is for printing the cards on a regular printer. It will arrange your cards on A4 pages, which you can export and print individually. It also set the front and back of each card together, so you can fold them along the joint to assemble the physical cards.
+
+**Tabletop**: This method creates a single frame containing all the cards arranged in a 10x7 grid, with the back positioned in the bottom right corner. This format is used by Tabletop Simulator and similar software.
+
+
+For both Standard and Print and Play, you can also choose to include cut marks to assist you (or the print shop) in cutting the cards.
+
+### Sample result
+
+![](https://github.com/PIWEEK/cardforge/blob/main/screenshots/export.jpg?raw=true)
+
+
+### Bleeding area and margins
+
+![](https://raw.githubusercontent.com/PIWEEK/cardforge/refs/heads/main/public/images/print_info.png)
+
+
+
+## Feedback and Support
+
+Please open an [issue](https://github.com/PIWEEK/cardforge/issues) either to provide feedback or to share a bug.
